@@ -71,7 +71,7 @@ public class SampleJob {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                System.out.println(" *** this is the first tasklet step *** ");
+                System.out.println(" *** THIS IS THE FIRST TASKLET STEP *** ");
                 return RepeatStatus.FINISHED;
             }
         };
