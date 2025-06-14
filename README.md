@@ -10,10 +10,14 @@ avec les dépendances réquises :
 - spring-boot comme projet parent 
 - une instance de bd : ici H2 (base de données mémoire)
 
+----
+
 ### 📚 <font color=green> étape 2 : Initialisation du projet </font>
 
 Il s'agit de configurer le projet, en ajoutant l'annotation @EnableBatchProcessing
 dans la classe Main du projet. 
+
+----
 
 ### 📚 <font color=green> étape 3 : Création de(s) la classe(s) de configuration du projet</font>
 
@@ -21,6 +25,7 @@ Créer un nouveau package de préférence nommé "config".
 Y ajouter une nouvelle (ici SampleJob) classe annotée : <font color=red> @Configuration</font>
 qui permettra de configurer le(s) Job(s) et ses Step(s).
 
+---
 
 ### 📚 <font color=green> étape 4 : Ajout de la configuration du projet</font>
 
@@ -30,6 +35,8 @@ Créer et configurer les Jobs et ses steps dans la classe créée dans le packag
 la classe du package config (ici SampleJob), pour l'instanciation des Jobs et leurs Steps.
 
 2- implémenter leurs Tâches ("Taskes") qui peuvent être de type Tasklet ou Chunked-Oriented, en fonction du besoin.
+
+---
 
 ### 📚 <font color=green> étape 5 : Implémentation des Tâches (Tasks) dans des classes de service </font>
 
@@ -49,6 +56,8 @@ Pour coder ses Tasks dans une classe dédiée, suivre les étapes suivantes :
 
 <b> Exemple : implémentation des Tâches secondTask et thirdTask
 
+---
+
 #### 🔥 <font color=red> ATTENTION : il est obligatoire de toujours démarrer son projet spring batch avec une dépendance à une base de données (même mémoire comme h2 si dans la mesure du possible) au risque d'avoir une exception lors de l'éxécution du projet. Son rôle est de gérer l'état des traitements batch , sauvegarder les métadonnées d'exécution : job lancés , étapes terminées, tentatives, erreurs, redémarrages, etc.
 Elle est indispensable parce que : 
 - elle permet de reprendre un job là oû, il s'est arrêté (redémarrage) 
@@ -63,6 +72,8 @@ Sans base de données :
 
 🛑 NB : Spring batch peut utiliser une bdd en mémoire (tel H2) pour des tests ou prototypes, mais pas en prod.
 </font>
+
+---
 
 ### 📚 <font color=green> étape 6 : Comprendre comment les méta données des Job et de leurs steps sont stockées dans le SGBD utilisé </font>
 
@@ -126,3 +137,38 @@ Les métadonnées des jobs sont stockées dans une base relationnelle via des ta
 Les paramètres et contextes d'exécution sont les seuls stockés en paires clé/valeur sérialisées.
 
 Cette structure permet la reprise, le suivi et l’audit des traitements batch.
+
+---
+
+### 📚 <font color=green> étape 7 : Configuration et utilisation de Mariadb à la place de H2</font>
+
+Comme expliqué un projet avec sSpring Batch ne peut se faire sans un SGBD. 
+Dans le cadre de ce projet, nous utiliserons MariaDB, pour nos tests. 
+Nous procédons alors au remplacement de la dépendance maven de H2 à MariaDB, et configurons l'accès à notre base de 
+données nommée spring_batch, dans le fichier applications.properties.
+
+L'utilisation d'un sgbd à la place de la base de données mémoire h2, nous permet de bien observer le cycle de vie d'une 
+instance de Job et de ses steps. 
+
+En effet, les tables suivantes sont créé :
+
+
+| Table                          | Rôle                                                                      |
+|--------------------------------|---------------------------------------------------------------------------|
+| `BATCH_JOB_INSTANCE`           | Identifie chaque instance logique d’un job                                |
+| `BATCH_JOB_EXECUTION`          | Enregistre chaque exécution d’un job                                      |
+| `BATCH_JOB_EXECUTION_PARAMS`   | Stocke les paramètres d’un job (sous forme clé/valeur)                    |
+| `BATCH_STEP_EXECUTION`         | Enregistre chaque exécution d’un step                                     |
+| `BATCH_STEP_EXECUTION_CONTEXT` | Contexte d’exécution d’un step (stocké sous forme de hash map sérialisée) |
+| `BATCH_JOB_EXECUTION_CONTEXT`  | Contexte global d’un job                                                  |
+
+Et à chaque exécution de projet Spring batch, on peux s'appercevoir que : 
+
+- <font color=red> l'exécution d'une instance de notre projet entraîne l'enregistrement des informations de notre du Job, 
+  de Steps, de leurs paramètres et de leur contexts dans les tables précités. Si le job est exécuté avec succès, sa réexécution 
+  n'est pas possible et affichera un message d'alert dans les logs de spring batch. 
+  De plus ce ne sont que les tables : BATCH_JOB_JOB_EXECUTION et BATCH_JOB_EXECUTION_CONTEXT qui auront de nouvelles lignes.
+  Toutes les autres tables n'auront aucune nouvelles.
+  
+
+- Cependant, lorsque le projet Spring est exécuté  
