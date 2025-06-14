@@ -162,7 +162,7 @@ En effet, les tables suivantes sont créé :
 | `BATCH_STEP_EXECUTION_CONTEXT` | Contexte d’exécution d’un step (stocké sous forme de hash map sérialisée) |
 | `BATCH_JOB_EXECUTION_CONTEXT`  | Contexte global d’un job                                                  |
 
-Et à chaque exécution de projet Spring batch, on peux s'appercevoir que : 
+Et à chaque exécution de projet Spring batch, on peut s'apercevoir que : 
 
 - <font color=red> l'exécution d'une instance de notre projet entraîne l'enregistrement des informations de notre du Job, 
   de Steps, de leurs paramètres et de leur contexts dans les tables précités. Si le job est exécuté avec succès, sa réexécution 
