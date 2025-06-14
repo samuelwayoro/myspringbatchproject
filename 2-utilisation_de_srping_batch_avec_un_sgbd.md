@@ -5,6 +5,7 @@
 <b>
 
 #### 🔥 <font color=red> ATTENTION : il est obligatoire de toujours démarrer son projet spring batch avec une dépendance à une base de données (même mémoire comme h2 si dans la mesure du possible) au risque d'avoir une exception lors de l'éxécution du projet. Son rôle est de gérer l'état des traitements batch , sauvegarder les métadonnées d'exécution : job lancés , étapes terminées, tentatives, erreurs, redémarrages, etc.
+
 Elle est indispensable parce que :
 - elle permet de reprendre un job là oû, il s'est arrêté (redémarrage)
 - évite de relancer un job déjà exécuté (gestion des identifiants d'exécution)
@@ -133,6 +134,30 @@ Afin d'exécuter un même JOB plusieurs fois, il faudrait le paramétrer au lanc
 
 Ceci entrainera une nouvelle instance du même JOB chaque lancement à cause des arguments.
 
+---
+### 📚 <font color=green> étape 9 : Exécution d'un même JOB sous plusieurs instances avec paramètre incrémentés </font>
 
+Afin de ne pas saisir à chaque fois les paramètres aux lancements de notre projet de Spring batch; il est possible de les automatiser
+et les rendre incrémentable. 
+
+Le framework Spring batch offre une méthode <font color=red> .incrementer(new RunIncrementer()) </font> lors de la création du Job permettant de le faire:
+
+    @Bean
+    public Job firstJob() {
+        return jobBuilderFactory
+                .get("First Job")
+                .incrementer(new RunIdIncrementer())  
+                .start(firstStep())
+                .next(secondStep())
+                .next(thirdStep())
+                .build();
+    }
+
+
+
+<font color=red> Celle-ci rajoutera automatiquement un paramètre du nom de run.id à l'instance du job qui sera exécuté (en plus des autres paramètres s'il y en a)
+et seront stockés dans la table : batch_job_execution_params </font> avec pour première valeur 1.
+
+🎯<font color=red>NB </font> : La vérification de la valeur du paramètre run.id est visible dans la table "batch_job_execution_params".  
 
 </b>

@@ -1,10 +1,12 @@
 package com.samydevup.myspringbatchproject.config;
 
+import com.samydevup.myspringbatchproject.listner.FirstJobListner;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
@@ -46,6 +48,12 @@ public class SampleJob {
     private Tasklet thirdTask;
 
     /**
+     * Injection des Listner de mon Job
+     */
+
+    @Autowired
+    private FirstJobListner firstJobListner;
+    /**
      * Méthode retournant le premier job de notre projet.
      * Nous utilisons le pattern builder pour le créer.
      * Pour ce faire, nous injectons l'interface JobBuilderFactory dans cette classe de configuration.
@@ -57,7 +65,13 @@ public class SampleJob {
 
     @Bean
     public Job firstJob() {
-        return jobBuilderFactory.get("First Job").start(firstStep()).next(secondStep()).next(thirdStep()).build();
+        return jobBuilderFactory.get("First Job")
+                .start(firstStep())
+                .incrementer(new RunIdIncrementer())
+                .next(secondStep())
+                .next(thirdStep())
+                .listener(firstJobListner)
+                .build();
     }
 
 
@@ -93,10 +107,16 @@ public class SampleJob {
     /***
      * Création d'un second step lui aussi de type Tasklet
      * implémenté ci-dessous.
+     *
+     * NB : Ce step utilise des données rajoutées dans le context à partir du listner du job (FirsJobListner)...
+     *      Ils sont implémentés dans le code du task de ce Step (secondTask).
      */
 
     private Step secondStep() {
-        return stepBuilderFactory.get("second step").tasklet(secondTask).build();
+        return stepBuilderFactory
+                .get("second step")
+                .tasklet(secondTask)
+                .build();
     }
 
     /**
