@@ -170,5 +170,3 @@ Et à chaque exécution de projet Spring batch, on peut s'apercevoir que :
   De plus ce ne sont que les tables : BATCH_JOB_JOB_EXECUTION et BATCH_JOB_EXECUTION_CONTEXT qui auront de nouvelles lignes.
   Toutes les autres tables n'auront aucune nouvelles.
   
-
-- Cependant, lorsque le projet Spring est exécuté  
