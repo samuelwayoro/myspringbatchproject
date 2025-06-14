@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Classe de configuration du/des jobs ; de ses "steps" (de type Tasklet et/ou Chunked-oriented)
- *
  */
 
 @Configuration
@@ -36,19 +35,31 @@ public class SampleJob {
     private StepBuilderFactory stepBuilderFactory;
 
 
+    /***
+     * INJECTION DES DEUX TASKLET
+     * IMPLEMENTEES DEPUIS LE PACKAGE SERVICE
+     */
+    @Autowired
+    private Tasklet secondTask;
+
+    @Autowired
+    private Tasklet thirdTask;
+
     /**
      * Méthode retournant le premier job de notre projet.
      * Nous utilisons le pattern builder pour le créer.
      * Pour ce faire, nous injectons l'interface JobBuilderFactory dans cette classe de configuration.
-     *
+     * <p>
      * Ici notre Job se nomme "First Job" et lance un step nommé "First Step" instancié par la méthode firstStep
+     *
      * @return Job
      */
 
     @Bean
     public Job firstJob() {
-        return jobBuilderFactory.get("First Job").start(firstStep()).build();
+        return jobBuilderFactory.get("First Job").start(firstStep()).next(secondStep()).next(thirdStep()).build();
     }
+
 
     /**
      * Méthode permettant de créer en seconde étape notre step.
@@ -63,8 +74,9 @@ public class SampleJob {
     /**
      * Méthode permettant de configurer le type de notre step
      * ici le type implémenté est Tasklet.
-     *
+     * <p>
      * Il ne fait qu'afficher une sortie standard
+     *
      * @return Tasklet
      */
     private Tasklet firstTask() {
@@ -76,5 +88,43 @@ public class SampleJob {
             }
         };
     }
+
+
+    /***
+     * Création d'un second step lui aussi de type Tasklet
+     * implémenté ci-dessous.
+     */
+
+    private Step secondStep() {
+        return stepBuilderFactory.get("second step").tasklet(secondTask).build();
+    }
+
+    /**
+     * private Tasklet secondTask() {
+     * return new Tasklet() {
+     *
+     * @Override public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+     * System.out.println("--- THIS IS THE SECOND TASKLET STEP ---");
+     * return RepeatStatus.FINISHED;
+     * }
+     * };
+     * }
+     */
+
+    private Step thirdStep() {
+        return stepBuilderFactory.get("third step").tasklet(thirdTask).build();
+    }
+
+    /*
+    private Tasklet thridTask() {
+        return new Tasklet() {
+            @Override
+            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
+                System.out.println("*-*- THIS IS THE THIRD TASKLET STEP *-*-");
+                return RepeatStatus.FINISHED;
+            }
+        };
+    }
+    */
 
 }
