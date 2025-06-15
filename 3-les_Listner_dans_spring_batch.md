@@ -16,7 +16,7 @@ Il permet d’accrocher du code personnalisé à des moments-clés du traitement
 
 📌 <font color=red> Exemple simple : </font>
 
-Un JobExecutionListener qui affiche un message avant et après le job.
+Ici une classe nommée JobExecutionListener qui affiche un message avant et après le job.
 
         @Component
         public class JobLoggerListener implements JobExecutionListener {
@@ -40,12 +40,12 @@ Dans notre projet, nous avons ajouté un Listner "FirstListner" à notre Job "Fi
 1. Créer un package pour les listner du projet (listner package), et le rajouter dans le @ComponantScan de la classe Main 
 
 
-2. Y créer les classes de listner (de préférence à partir du nom de leur Job respectif) ; les faire implémenter l'interface <font color=red> "JobExecutionListener"</font> et <font color=red>@Component</font>.
+2. Y créer les classes de listner (de préférence à partir du nom de leur Job respectif) ; les faire implémenter l'interface <font color=red> "JobExecutionListener"</font> et rajouter l'annotation <font color=red>@Component</font>.
 Cette implémentation donne l'opportunité de redéfinir les méthodes <font color=red>beforeJob()</font> qui se lance avant l'exécution du Job, et la méthode <font color=red>afterJob()</font>,
 qui elle s'exécute à la fin du Job. 
 Il est possible, d'exécuter de la logique dans ses méthodes (code métier, logs ou autres ...). Dans notre exemple, nous écrivons des traces logs, et rajoutons une variable (Map : clé-valeur) dans le context du Job : <font color=yellow> <i> .jobExecution.getExecutionContext().put("Nom", "WAYORO");</i></font>
 
-<font color =red>NB : </font> Toutes variables rajoutées dans le contexts via le Listner est utilisables dans tous les Step du Job. Dans notre exemple la map {"nom","WAYORO"} est utilisée dans le step SecondStep à travers sa Task SecondTask.
+<font color =red>NB : </font> Toutes variables rajoutées dans le contexts via le Listner est utilisables dans tous les Step du Job. Dans notre exemple la map {"nom","WAYORO"} est utilisée dans le step SecondStep, de notre JOB à travers sa Task SecondTask.
 
 
 📚 <font color=red> Types de listeners disponibles : </font>

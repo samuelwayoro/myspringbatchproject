@@ -1,6 +1,9 @@
 package com.samydevup.myspringbatchproject.config;
 
 import com.samydevup.myspringbatchproject.listner.FirstJobListner;
+import com.samydevup.myspringbatchproject.listner.FirstStepListner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.StepContribution;
@@ -20,6 +23,8 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SampleJob {
+
+    private static Logger logger = LoggerFactory.getLogger(SampleJob.class);
 
     /**
      * Objet à intégrer en premier lieu.
@@ -48,11 +53,18 @@ public class SampleJob {
     private Tasklet thirdTask;
 
     /**
-     * Injection des Listner de mon Job
+     * Injection des Listner de mon Job :
+     * - FirstJobListener : Listener pour le Job
+     * - FirstStepListner : Listener pour le Step
      */
 
     @Autowired
     private FirstJobListner firstJobListner;
+
+    @Autowired
+    private FirstStepListner firstStepListner;
+
+
     /**
      * Méthode retournant le premier job de notre projet.
      * Nous utilisons le pattern builder pour le créer.
@@ -67,7 +79,7 @@ public class SampleJob {
     public Job firstJob() {
         return jobBuilderFactory.get("First Job")
                 .start(firstStep())
-                .incrementer(new RunIdIncrementer())
+                .incrementer(new RunIdIncrementer()) //rajoute le paramètre run.id qui s'auto-incrémente dans la bd
                 .next(secondStep())
                 .next(thirdStep())
                 .listener(firstJobListner)
@@ -82,7 +94,11 @@ public class SampleJob {
      * @return Step
      */
     private Step firstStep() {
-        return stepBuilderFactory.get("First Step").tasklet(firstTask()).build();
+        return stepBuilderFactory
+                .get("First Step")
+                .tasklet(firstTask())
+                .listener(firstStepListner)//câblage du listner (firstStepListner)
+                .build();
     }
 
     /**
@@ -97,7 +113,8 @@ public class SampleJob {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                System.out.println(" *** THIS IS THE FIRST TASKLET STEP *** ");
+                logger.info("⭐⭐⭐ THIS IS THE FIRST TASKLET STEP ⭐⭐⭐ ");
+                logger.info("🔜🔜🔜 contenu de son context {} 🔜🔜🔜 ", chunkContext.getStepContext().getStepExecutionContext());
                 return RepeatStatus.FINISHED;
             }
         };
