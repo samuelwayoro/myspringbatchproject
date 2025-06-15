@@ -18,13 +18,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Classe de configuration du/des jobs ; de ses "steps" (de type Tasklet et/ou Chunked-oriented)
+ * Classe d'exemple de configuration du job (FirstJob) et des Steps de type TaskletStep
  */
 
-@Configuration
-public class SampleJob {
+//@Configuration
+public class JobWithTaskletsSteps {
 
-    private static Logger logger = LoggerFactory.getLogger(SampleJob.class);
+    private static Logger logger = LoggerFactory.getLogger(JobWithTaskletsSteps.class);
 
     /**
      * Objet à intégrer en premier lieu.
