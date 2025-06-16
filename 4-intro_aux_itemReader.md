@@ -20,7 +20,15 @@ Il lit un "item" (objet) et le passe au ItemProcessor (facultatif), puis au Item
 * Il lit un élément par appel à read(). 
 * Quand il n’y a plus rien à lire, il retourne null.
 
-<font color=red> NB : </font> Toute itemreader implémente l'interface itemReader < T >
+<font color=red> NB : </font> Toute itemReader implémente l'interface itemReader < T >
+
+✅ <font color=red> Comment créer/ajouter des itemReader dans un projet spring-batch </font>
+
+1. créer un package pour ses itemReader (ici reader)
+2. y ajouter la/les classe(s) implémentant l'interface ItemReader< T>, sans oublier l'annotation @Component
+3. Redéfinir la méthode, en fonction du type de reader (voir les différents types plus bas...)
+
+
 
 📌 Exemple 1 : ListItemReader (lecture en mémoire d'une liste d'entier ) 
 
