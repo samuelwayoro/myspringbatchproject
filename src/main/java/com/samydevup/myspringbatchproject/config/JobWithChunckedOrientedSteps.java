@@ -63,11 +63,14 @@ public class JobWithChunckedOrientedSteps {
     public Step firstChunkStep() {
         logger.info("👉 step firstChunkStep en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
-                .<Integer, Long>chunk(3)
+                .<Integer, Long>chunk(4)
                 .reader(firstItemReader)
                 .processor(firstItemProcessor)
                 .writer(firstItemWriter)
                 .build();
     }
+
+
+
 
 }
