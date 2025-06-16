@@ -34,6 +34,9 @@ Un ItemProcessor est un composant optionnel dans Spring Batch qui permet de tran
 * Si process() retourne null, l'item est ignoré (non écrit)
 
 
+🧪 <font color=red> Exemple 0 : convertir des entier en Long (voir FirstItemProcessor) </font>
+
+
 🧪 <font color=red> Exemple 1 : mettre les noms en majuscules </font>
 
         @Component

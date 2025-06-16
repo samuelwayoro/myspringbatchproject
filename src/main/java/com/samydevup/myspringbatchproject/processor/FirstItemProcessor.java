@@ -13,7 +13,6 @@ public class FirstItemProcessor implements ItemProcessor<Integer, Long> {
     @Override
     public Long process(Integer item) throws Exception {
         logger.info("🚀 FirstItemProcessor en cours   ");
-        Long l = Long.valueOf(20 + item);
-        return l;
+        return Long.valueOf(20 + item);
     }
 }
