@@ -20,7 +20,7 @@ public class JobWithChunckedOrientedSteps {
     private static Logger logger = LoggerFactory.getLogger(JobWithChunckedOrientedSteps.class);
 
     @Autowired
-    public JobBuilderFactory jobBuilderFactory;
+    private JobBuilderFactory jobBuilderFactory;
 
     @Autowired
     private StepBuilderFactory stepBuilderFactory;
@@ -43,8 +43,8 @@ public class JobWithChunckedOrientedSteps {
 
 
     @Bean
-    private Job secondJob() {
-        logger.info("✨✨✨ demarrage du job :  {} de type chunk-oriented step  ", secondJob().getName());
+    public Job secondJob() {
+        logger.info("✨✨✨ demarrage du job secondJob() de type chunk-oriented step  ");
         return jobBuilderFactory
                 .get("Second Job")
                 .start(firstChunkStep())
@@ -60,7 +60,7 @@ public class JobWithChunckedOrientedSteps {
      */
 
     @Bean
-    private Step firstChunkStep() {
+    public Step firstChunkStep() {
         logger.info("👉 step firstChunkStep en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
                 .<Integer, Long>chunk(3)

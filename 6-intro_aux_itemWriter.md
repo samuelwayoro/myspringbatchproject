@@ -8,7 +8,7 @@ Un ItemWriter est un composant spring batch chargé d'écrire les objets traité
 vers une destination : fichier, base de données , API , etc...
 
 
-💡 <font color=red>  Il est utilisé en mode "chunck" </font>
+💡 <font color=red. > Il est utilisé en mode "chunck" </font>
 
 Spring batch lit plusieurs items, les traite, puis les écrit par groupe(chunck), via un itemWriter.
 
