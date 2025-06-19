@@ -2,7 +2,7 @@
 
 <b>
 
-### 📚 <font color=green> étape 14 : Intro au Step chunck-oriented dans Spring batch </font>
+### 📚 <font color=green> étape 10 : Intro au Step chunck-oriented dans Spring batch </font>
 
 Un chunk-oriented step est un type de traitement par lots, dans lequel Spring batch :
 

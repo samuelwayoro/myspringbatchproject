@@ -15,10 +15,11 @@ import java.util.List;
 public class FirstItemReader implements ItemReader<Integer> {
 
     private static Logger logger = LoggerFactory.getLogger(FirstItemReader.class);
-    int i = 0;
 
 
     List<Integer> integerList = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
+    int i = 0;
 
     /**
      * Boucle sur la liste des integer pour retourner chaque entier à tour de rôle, en utilisant la variable "i"

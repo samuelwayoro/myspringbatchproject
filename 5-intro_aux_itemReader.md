@@ -2,9 +2,10 @@
 
 <b>
 
-### 📚 <font color=green> étape 11 : Intro au itemReader dans Spring batch </font>
+### 📚 <font color=green> étape 12 : Intro au itemReader dans Spring batch </font>
 
-Un ItemReader en Spring Batch est un composant qui lit une donnée à traiter, un élément à la fois (ligne de fichier, enregistrement de base de données, etc.).
+Un ItemReader en Spring Batch est un composant qui lit une donnée à traiter, 
+un élément à la fois depuis une source (ligne de fichier, enregistrement de base de données, etc.).
 
 ✅ <font color=red>  À quoi ça sert ? </font>
 

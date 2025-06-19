@@ -2,6 +2,8 @@ package com.samydevup.myspringbatchproject.config;
 
 import com.samydevup.myspringbatchproject.listner.FirstJobListner;
 import com.samydevup.myspringbatchproject.listner.FirstStepListner;
+import com.samydevup.myspringbatchproject.service.SecondTask;
+import com.samydevup.myspringbatchproject.service.ThirdTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -15,7 +17,6 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * Classe d'exemple de configuration du job (FirstJob) et des Steps de type TaskletStep
@@ -47,10 +48,10 @@ public class JobWithTaskletsSteps {
      * IMPLEMENTEES DEPUIS LE PACKAGE SERVICE
      */
     @Autowired
-    private Tasklet secondTask;
+    private SecondTask secondTasklet;
 
     @Autowired
-    private Tasklet thirdTask;
+    private ThirdTask thirdTasklet;
 
     /**
      * Injection des Listner de mon Job :
@@ -93,6 +94,7 @@ public class JobWithTaskletsSteps {
      *
      * @return Step
      */
+
     private Step firstStep() {
         return stepBuilderFactory
                 .get("First Step")
@@ -131,8 +133,8 @@ public class JobWithTaskletsSteps {
 
     private Step secondStep() {
         return stepBuilderFactory
-                .get("second step")
-                .tasklet(secondTask)
+                .get("Second step")
+                .tasklet(secondTasklet)
                 .build();
     }
 
@@ -149,7 +151,10 @@ public class JobWithTaskletsSteps {
      */
 
     private Step thirdStep() {
-        return stepBuilderFactory.get("third step").tasklet(thirdTask).build();
+        return stepBuilderFactory
+                .get("third step")
+                .tasklet(thirdTasklet)
+                .build();
     }
 
     /*

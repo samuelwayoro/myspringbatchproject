@@ -17,11 +17,11 @@ Un ItemProcessor est un composant optionnel dans Spring Batch qui permet de tran
 
   <font color=red> NB : </font> Toute itemProcessor implémente l'interface ItemProcessor 
 
-✅ <font color=red> Comment créer/ajouter des itemReader dans un projet spring-batch </font>
+✅ <font color=red> Comment créer/ajouter des itemProcessor dans un projet spring-batch </font>
 
 1. créer un package pour ses itemProcessor (ici processor)
 2. y ajouter la/les classe(s) implémentant l'interface ItemProcessor, sans oublier l'annotation @Component
-3. Redéfinir la méthode, en fonction process() du type de reader (voir les différents types plus bas...)
+3. Redéfinir la méthode, en fonction process() du type de données renvoyées par le reader (voir les différents types plus bas...)
 
 🧱 <font color=red>Interface</font>
 
@@ -29,8 +29,8 @@ Un ItemProcessor est un composant optionnel dans Spring Batch qui permet de tran
             O process(I item) throws Exception;
         }
 
-* I = type de l'objet lu 
-* O = type de l'objet écrit 
+* I = type de l'objet lu, et provenant du reader
+* O = type de l'objet à envoyé à writer
 * Si process() retourne null, l'item est ignoré (non écrit)
 
 

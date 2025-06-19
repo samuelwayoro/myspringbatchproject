@@ -2,6 +2,7 @@ package com.samydevup.myspringbatchproject.config;
 
 import com.samydevup.myspringbatchproject.processor.FirstItemProcessor;
 import com.samydevup.myspringbatchproject.reader.FirstItemReader;
+import com.samydevup.myspringbatchproject.service.SecondTask;
 import com.samydevup.myspringbatchproject.writer.FirstItemWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,20 +43,30 @@ public class JobWithChunckedOrientedSteps {
     private FirstItemProcessor firstItemProcessor;
 
 
+    /***
+     * INJECTION DES DEUX TASKLET
+     * IMPLEMENTEES DEPUIS LE PACKAGE SERVICE
+     */
+    @Autowired
+    private SecondTask secondTasklet;
+
+
     @Bean
     public Job secondJob() {
-        logger.info("✨✨✨ demarrage du job secondJob() de type chunk-oriented step  ");
+        logger.info("✨✨✨ démarrage du job secondJob() de type chunk-oriented step  ");
         return jobBuilderFactory
                 .get("Second Job")
-                .start(firstChunkStep())
                 .incrementer(new RunIdIncrementer())
+                .start(firstChunkStep())
+                .next(simpleTaskletStep())
                 .build();
     }
 
 
     /**
-     * Premier step orienté chunk, contenant un reader,processor et writer .
-     * Il est ensuite raccordé au Job ci-dessus .
+     * Premier step orienté chunk, contenant un reader,processor et writer
+     * Il est ensuite raccordé au Job ci-dessus
+     *
      * @return
      */
 
@@ -71,6 +82,12 @@ public class JobWithChunckedOrientedSteps {
     }
 
 
+    private Step simpleTaskletStep() {
+        logger.info("JobWithChunckedOrientedSteps simpleTaskletStep()...");
+        return stepBuilderFactory.get("simple Tasklet Step")
+                .tasklet(secondTasklet)
+                .build();
+    }
 
 
 }

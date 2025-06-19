@@ -4,7 +4,7 @@
 
 <b>
 
-#### 🔥 <font color=red> ATTENTION : il est obligatoire de toujours démarrer son projet spring batch avec une dépendance à une base de données (même mémoire comme h2 si dans la mesure du possible) au risque d'avoir une exception lors de l'éxécution du projet. Son rôle est de gérer l'état des traitements batch , sauvegarder les métadonnées d'exécution : job lancés , étapes terminées, tentatives, erreurs, redémarrages, etc.
+#### 🔥 <font color=red> ATTENTION : Il est obligatoire de toujours démarrer son projet spring batch avec une dépendance à une base de données (même mémoire comme h2 par défaut) au risque d'avoir une exception lors de l'éxécution du projet. Son rôle est de gérer l'état des traitements batch , sauvegarder les métadonnées d'exécution : job lancés , étapes terminées, tentatives, erreurs, redémarrages, etc.
 
 Elle est indispensable parce que :
 - elle permet de reprendre un job là oû, il s'est arrêté (redémarrage)
@@ -42,6 +42,60 @@ Voici les tables principales utilisées pour stocker les métadonnées :
 | `BATCH_STEP_EXECUTION`         | Enregistre chaque exécution d’un step                                     |
 | `BATCH_STEP_EXECUTION_CONTEXT` | Contexte d’exécution d’un step (stocké sous forme de hash map sérialisée) |
 | `BATCH_JOB_EXECUTION_CONTEXT`  | Contexte global d’un job                                                  |
+
+
+🚀 <font color=red> Explication : </font> Ordre d'enregistrement dans les tables Spring Batch 
+
+Lorsque tu exécutes un job, voici l'ordre des insertions dans la base : 
+
+
+🔹 1. BATCH_JOB_INSTANCE :
+
+- Créée une seule fois par combinaison (job_name, job_parameters)
+- Sert d'identifiant logique du job
+- Contient job_instance_id, job_name, job_key
+- 📝 <font color=red> Insert uniquement si le même job avec les mêmes paramètres n’a jamais été lancé.</font>
+
+
+🔹 2. BATCH_JOB_EXECUTION :
+
+- Insérée à chaque lancement réel (même si l'instance existe déjà)
+- Représente une exécution spécifique du job
+- Contient job_execution_id, start_time, status, etc.
+- 📝 Reliée à job_instance_id
+
+🔹 3. BATCH_JOB_EXECUTION_PARAMS : 
+
+- Stocke les paramètres passés à cette exécution
+- Un paramètre = une ligne
+- 📝 Reliée à job_execution_id
+
+
+🔹 4. BATCH_JOB_EXECUTION_CONTEXT : 
+
+- Contexte global (Map<String, Object>) sérialisé en JSON ou binaire
+- 📝 Souvent rempli en fin de job ou par un listener
+
+
+🔹 5. BATCH_STEP_EXECUTION (pour chaque step) : 
+- Une ligne par step exécuté
+- Ajoutée quand un step démarre
+- 📝 Reliée à job_execution_id
+
+🔹 6. BATCH_STEP_EXECUTION_CONTEXT: 
+
+- Comme pour le job, stocke le contexte sérialisé d’un step
+
+
+📌 Schéma d’ordre simplifié : 
+
+        1. BATCH_JOB_INSTANCE             ← si nécessaire
+        2. BATCH_JOB_EXECUTION
+        3. BATCH_JOB_EXECUTION_PARAMS
+        4. BATCH_STEP_EXECUTION (xN)
+        5. BATCH_STEP_EXECUTION_CONTEXT (xN)
+        6. BATCH_JOB_EXECUTION_CONTEXT
+
 
 
 🔑 <font color=orange> Ce qui est effectivement stocké en clé/valeur : </font>
@@ -89,7 +143,7 @@ Cette structure permet la reprise, le suivi et l’audit des traitements batch.
 
 ### 📚 <font color=green> étape 7 : Configuration et utilisation de Mariadb à la place de H2</font>
 
-Comme expliqué un projet avec sSpring Batch ne peut se faire sans un SGBD.
+Comme expliqué un projet avec Spring Batch ne peut se faire sans un SGBD.
 Dans le cadre de ce projet, nous utiliserons MariaDB, pour nos tests.
 Nous procédons alors au remplacement de la dépendance maven de H2 à MariaDB, et configurons l'accès à notre base de
 données nommée spring_batch, dans le fichier applications.properties.
@@ -97,7 +151,7 @@ données nommée spring_batch, dans le fichier applications.properties.
 L'utilisation d'un sgbd à la place de la base de données mémoire h2, nous permet de bien observer le cycle de vie d'une
 instance de Job et de ses steps.
 
-En effet, les tables suivantes sont créé :
+En effet, les tables suivantes sont créées :
 
 
 | Table                          | Rôle                                                                      |
@@ -132,7 +186,7 @@ Afin d'exécuter un même JOB plusieurs fois, il faudrait le paramétrer au lanc
 - en passant le(s) paramètres : <font color=yellow>run=nomParametre</font> au lancement via l'éditeur de développement 
 - ou en ligne de commande 
 
-Ceci entrainera une nouvelle instance du même JOB chaque lancement à cause des arguments.
+Ceci entrainera une nouvelle instance du même JOB à chaque lancement à cause des arguments.
 
 ---
 ### 📚 <font color=green> étape 9 : Exécution d'un même JOB sous plusieurs instances avec paramètre incrémentés </font>
