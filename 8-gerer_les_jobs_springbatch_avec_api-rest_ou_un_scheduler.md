@@ -6,7 +6,7 @@
 
 🧠 <font color=red> Contexte </font> 
 
-Par défaut, Spring boot exécute automatiquement tous les jobs batch déclarés comme @Bean lors du démarrage de l'application.
+Par défaut, Spring-boot exécute automatiquement tous les jobs batch déclarés comme @Bean lors du démarrage de l'application.
 
 Cela signifie : 
 
