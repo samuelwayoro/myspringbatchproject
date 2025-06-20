@@ -14,7 +14,7 @@ public class ThirdTask implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-        logger.info( "♾♾♾ THIS IS THE THIRD TASKLET  ♾♾♾ ");
+        logger.info("🔜 thirdTask de jobWithTaskletsSteps en cours ...  ");
         return RepeatStatus.FINISHED;
     }
 }

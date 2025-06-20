@@ -13,16 +13,14 @@ public class FirstJobListner implements JobExecutionListener {
 
     @Override
     public void beforeJob(JobExecution jobExecution) {
-        logger.info(" 🔄 🔄 🔄 Le job : {}  commence ... 🔄 🔄 🔄  ", jobExecution.getJobInstance().getJobName());
-        logger.info(" ses paramètres sont {}", jobExecution.getJobParameters());
-        logger.info(" son context est le suivant : {} ", jobExecution.getExecutionContext());
-
-        logger.info("rajout de paramètres suivant {'nom','WAYORO'} dans le context du job , pour utilisation dans le step 'secondStep' ");
+        logger.info("⏺ DEBUT DU FIRSTJOBLISTNER :  méthode beforeJob du listner FirstJobListner");
+         logger.info(" rajout de paramètres suivant {'nom','WAYORO'} dans le context de firstJob via FirstJobListner , pour utilisation dans le step 'secondStep' ");
         jobExecution.getExecutionContext().put("Nom", "WAYORO");//ses paramètres seon disponible dans le code et visible dans le afterJob()
     }
 
     @Override
     public void afterJob(JobExecution jobExecution) {
-        logger.info(" ✅✅✅ Le job : {} est terminé avec les paramètres suivant {} ", jobExecution.getJobInstance().getJobName(), jobExecution.getJobParameters());
+        logger.info("⏺ FIN DU FIRSTJOBLISTNER :  méthode beforeJob du listner FirstJobListner");
+
     }
 }

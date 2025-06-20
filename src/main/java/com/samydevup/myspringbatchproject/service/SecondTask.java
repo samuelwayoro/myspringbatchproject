@@ -22,7 +22,7 @@ public class SecondTask implements Tasklet {
 
     @Override
     public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-        logger.info("🔜🔜🔜 THIS IS THE SECOND TASKLET STEP WITH USE FIRSTJOBCONTEXT PARAMETERS , INTRODUCED VIA FIRSTJOBLISTNER  🔜🔜🔜");
+        logger.info("🔜 secondTask en cours ...  ");
         logger.info("⚠⚠⚠ context parameters are {} ⚠⚠⚠ ", chunkContext.getStepContext().getJobExecutionContext());
         return RepeatStatus.FINISHED;
     }

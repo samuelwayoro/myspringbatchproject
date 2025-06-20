@@ -53,7 +53,7 @@ public class JobWithChunckedOrientedSteps {
 
     @Bean
     public Job secondJob() {
-        logger.info("✨✨✨ démarrage du job secondJob() de type chunk-oriented step  ");
+        logger.info("✨✨✨ démarrage du job secondJob() de JobWithChunckedOrientedSteps ");
         return jobBuilderFactory
                 .get("Second Job")
                 .incrementer(new RunIdIncrementer())
@@ -64,7 +64,7 @@ public class JobWithChunckedOrientedSteps {
 
 
     /**
-     * Premier step orienté chunk, contenant un reader,processor et writer
+     * Premier step orienté chunk, contenant un Reader,Processor et Writer
      * Il est ensuite raccordé au Job ci-dessus
      *
      * @return
@@ -72,7 +72,7 @@ public class JobWithChunckedOrientedSteps {
 
     @Bean
     public Step firstChunkStep() {
-        logger.info("👉 step firstChunkStep en cours ... ");
+        logger.info("👉 step firstChunkStep de JobWithChunckedOrientedSteps en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
                 .<Integer, Long>chunk(4)
                 .reader(firstItemReader)
@@ -83,7 +83,7 @@ public class JobWithChunckedOrientedSteps {
 
 
     private Step simpleTaskletStep() {
-        logger.info("JobWithChunckedOrientedSteps simpleTaskletStep()...");
+        logger.info("👉 simpleTaskletStep de JobWithChunckedOrintedSteps en cours ... ");
         return stepBuilderFactory.get("simple Tasklet Step")
                 .tasklet(secondTasklet)
                 .build();

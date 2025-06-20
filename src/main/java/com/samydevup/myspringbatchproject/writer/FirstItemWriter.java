@@ -14,7 +14,7 @@ public class FirstItemWriter implements ItemWriter<Long> {
 
     @Override
     public void write(List<? extends Long> items) throws Exception {
-        logger.info("✨✨ Writer FirstItemWriter() en cours ...");
+        logger.info("✍ Writer FirstItemWriter() en cours ...");
         for (Long item : items) {
             logger.info("{}", item);
         }

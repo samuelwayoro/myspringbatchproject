@@ -14,20 +14,17 @@ public class FirstStepListner implements StepExecutionListener {
 
     @Override
     public void beforeStep(StepExecution stepExecution) {
-        logger.info("⏺⏺⏺lancement du step  {}  en cours ⏺⏺⏺", stepExecution.getStepName());
-        logger.info(" context de son job {} ", stepExecution.getJobExecution().getExecutionContext());
-        logger.info("context de ce step {} ", stepExecution.getExecutionContext());
-
+        logger.info("⏺ DEBUT DU FIRSTSTEPLISTNER :  méthode beforeStep du listner FIRSTSTEPLISTNER");
         //rajout d'une donnée clé-valeur dans le context du step
-        logger.info(" rajout de la variable {'SEC_KEY','SEC_VALUE'} dans le context de ce step ");
+        logger.info("rajout de la variable {'SEC_KEY','SEC_VALUE'} dans le context de ce step ");
         stepExecution.getExecutionContext().put("SEC_KEY", "SEC_VALUE");
     }
 
     @Override
     public ExitStatus afterStep(StepExecution stepExecution) {
-        logger.info("fin du step avec le context suivant de son job {} ", stepExecution.getJobExecution().getExecutionContext());
-        logger.info("fin du déroulement du step avec le context {} ", stepExecution.getExecutionContext());
-        logger.info("🔚🔚🔚 fin du step {}", stepExecution.getStepName());
+        logger.info("⏺ méthode afterStep du listner FirstStepListner");
+        logger.info("⏺ FIN DU FIRSTSTEPLISTNER :  méthode afteStep du listner FIRSTSTEPLISTNER");
+
         return null;
     }
 }

@@ -17,12 +17,13 @@ import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Classe d'exemple de configuration du job (FirstJob) et des Steps de type TaskletStep
  */
 
-//@Configuration
+@Configuration
 public class JobWithTaskletsSteps {
 
     private static Logger logger = LoggerFactory.getLogger(JobWithTaskletsSteps.class);
@@ -78,9 +79,10 @@ public class JobWithTaskletsSteps {
 
     @Bean
     public Job firstJob() {
+        logger.info("✨✨✨ démarrage de firstJob  de JobWithTaskletsSteps  ");
         return jobBuilderFactory.get("First Job")
-                .start(firstStep())
                 .incrementer(new RunIdIncrementer()) //rajoute le paramètre run.id qui s'auto-incrémente dans la bd
+                .start(firstStep())
                 .next(secondStep())
                 .next(thirdStep())
                 .listener(firstJobListner)
@@ -96,6 +98,7 @@ public class JobWithTaskletsSteps {
      */
 
     private Step firstStep() {
+        logger.info("👉 firstStep de JobWithTaskletsSteps en cours ... ");
         return stepBuilderFactory
                 .get("First Step")
                 .tasklet(firstTask())
@@ -115,8 +118,8 @@ public class JobWithTaskletsSteps {
         return new Tasklet() {
             @Override
             public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                logger.info("⭐⭐⭐ THIS IS THE FIRST TASKLET STEP ⭐⭐⭐ ");
-                logger.info("🔜🔜🔜 contenu de son context {} 🔜🔜🔜 ", chunkContext.getStepContext().getStepExecutionContext());
+                logger.info("🔜 firstTask de jobWithTaskletsSteps en cours ...  ");
+                logger.info("contenu de son context {} ", chunkContext.getStepContext().getStepExecutionContext());
                 return RepeatStatus.FINISHED;
             }
         };
@@ -132,6 +135,7 @@ public class JobWithTaskletsSteps {
      */
 
     private Step secondStep() {
+        logger.info("👉 secondStep de JobWithTaskletsSteps en cours ... ");
         return stepBuilderFactory
                 .get("Second step")
                 .tasklet(secondTasklet)
@@ -151,6 +155,7 @@ public class JobWithTaskletsSteps {
      */
 
     private Step thirdStep() {
+        logger.info("👉 thirdStep de JobWithTaskletsSteps en cours ... ");
         return stepBuilderFactory
                 .get("third step")
                 .tasklet(thirdTasklet)
