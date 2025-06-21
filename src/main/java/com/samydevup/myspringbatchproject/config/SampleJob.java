@@ -2,8 +2,11 @@ package com.samydevup.myspringbatchproject.config;
 
 import com.samydevup.myspringbatchproject.listner.FirstJobListner;
 import com.samydevup.myspringbatchproject.listner.FirstStepListner;
+import com.samydevup.myspringbatchproject.processor.FirstItemProcessor;
+import com.samydevup.myspringbatchproject.reader.FirstItemReader;
 import com.samydevup.myspringbatchproject.service.SecondTask;
 import com.samydevup.myspringbatchproject.service.ThirdTask;
+import com.samydevup.myspringbatchproject.writer.FirstItemWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -19,14 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/**
- * Classe d'exemple de configuration du job (FirstJob) et des Steps de type TaskletStep
- */
-
 @Configuration
-public class JobWithTaskletsSteps {
+public class SampleJob {
 
-    private static Logger logger = LoggerFactory.getLogger(JobWithTaskletsSteps.class);
+    private static Logger logger = LoggerFactory.getLogger(SampleJob.class);
 
     /**
      * Objet à intégrer en premier lieu.
@@ -65,6 +64,25 @@ public class JobWithTaskletsSteps {
 
     @Autowired
     private FirstStepListner firstStepListner;
+
+
+    /**
+     * Injection des reader,processor et writer
+     *
+     * @return
+     */
+
+    @Autowired
+    private FirstItemReader firstItemReader;
+
+    @Autowired
+    private FirstItemWriter firstItemWriter;
+
+    @Autowired
+    private FirstItemProcessor firstItemProcessor;
+
+
+
 
 
     /**
@@ -142,17 +160,6 @@ public class JobWithTaskletsSteps {
                 .build();
     }
 
-    /**
-     * private Tasklet secondTask() {
-     * return new Tasklet() {
-     *
-     * @Override public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-     * System.out.println("--- THIS IS THE SECOND TASKLET STEP ---");
-     * return RepeatStatus.FINISHED;
-     * }
-     * };
-     * }
-     */
 
     private Step thirdStep() {
         logger.info("👉 thirdStep de JobWithTaskletsSteps en cours ... ");
@@ -162,16 +169,46 @@ public class JobWithTaskletsSteps {
                 .build();
     }
 
-    /*
-    private Tasklet thridTask() {
-        return new Tasklet() {
-            @Override
-            public RepeatStatus execute(StepContribution stepContribution, ChunkContext chunkContext) throws Exception {
-                System.out.println("*-*- THIS IS THE THIRD TASKLET STEP *-*-");
-                return RepeatStatus.FINISHED;
-            }
-        };
+
+
+
+    @Bean
+    public Job secondJob() {
+        logger.info("✨✨✨ démarrage du job secondJob() de JobWithChunckedOrientedSteps ");
+        return jobBuilderFactory
+                .get("Second Job")
+                .incrementer(new RunIdIncrementer())
+                .start(firstChunkStep())
+                .next(simpleTaskletStep())
+                .build();
     }
-    */
+
+
+    /**
+     * Premier step orienté chunk, contenant un Reader,Processor et Writer
+     * Il est ensuite raccordé au Job ci-dessus
+     *
+     * @return
+     */
+
+    @Bean
+    public Step firstChunkStep() {
+        logger.info("👉 step firstChunkStep de JobWithChunckedOrientedSteps en cours ... ");
+        return stepBuilderFactory.get("First Chunck Step")
+                .<Integer, Long>chunk(4)
+                .reader(firstItemReader)
+                .processor(firstItemProcessor)
+                .writer(firstItemWriter)
+                .build();
+    }
+
+
+    private Step simpleTaskletStep() {
+        logger.info("👉 simpleTaskletStep de JobWithChunckedOrintedSteps en cours ... ");
+        return stepBuilderFactory.get("simple Tasklet Step")
+                .tasklet(secondTasklet)
+                .build();
+    }
+
 
 }
