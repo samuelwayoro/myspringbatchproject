@@ -48,12 +48,14 @@ qui permet de déclencher un job batch à la demande, en lui passant éventuelle
     * Le mécanisme de JobParameters unique dans la récupération des noms des jobs
 
 
-6. Appeler le REST API mis à disposition à partir d'un outil (Postman ou autre...)
-
+6. Appeler le REST API mis à disposition à partir d'un outil (Postman ou autre...) à partir de son url (endpoint)
 
 <font color=red> 📌 À retenir: </font>
 
 * le job ne se lance plus automatiquement ➜ spring.batch.job.enabled=false
-* Tu contrôle le moment et les paramètres 
-* Tu peut même relancer un même job plusieurs fois (si les JobParameters sont uniques)
+
+* Tu contrôles le moment et les paramètres 
+
+* Tu peux même relancer un même job plusieurs fois (si les JobParameters sont uniques)
+
 * Tu peux gérer les retours : succès, échec, logs...

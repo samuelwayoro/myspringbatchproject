@@ -1,5 +1,6 @@
 package com.samydevup.myspringbatchproject.controller;
 
+import com.samydevup.myspringbatchproject.service.JobService;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
@@ -23,33 +24,11 @@ import java.util.Map;
 public class JobController {
 
     @Autowired
-    JobLauncher jobLauncher;//util pour le lancement des jobs du projet avec ous sans les jobParameters
-
-
-    @Autowired
-    @Qualifier("firstJob")
-    Job firstJob;
-
-
-    @Autowired
-    @Qualifier("secondJob")
-    Job secondJob;
-
+    JobService jobService;
 
     @GetMapping("/start/{jobName}")
     public String startJobs(@PathVariable String jobName) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-
-        //mécanisme d'unicité des jobParameters
-
-        Map<String, JobParameter> params = new HashMap<>();
-        params.put("currentTime",new JobParameter(System.currentTimeMillis()));
-        JobParameters jobParameters = new JobParameters(params);
-
-        if(jobName.equals("First Job")){
-            jobLauncher.run(firstJob, jobParameters);
-        } else if (jobName.equals("Second Job")) {
-            jobLauncher.run(secondJob, jobParameters);
-        }
+        jobService.startJob(jobName);
         return "job started ...";
     }
 

@@ -4,8 +4,8 @@ import com.samydevup.myspringbatchproject.listner.FirstJobListner;
 import com.samydevup.myspringbatchproject.listner.FirstStepListner;
 import com.samydevup.myspringbatchproject.processor.FirstItemProcessor;
 import com.samydevup.myspringbatchproject.reader.FirstItemReader;
-import com.samydevup.myspringbatchproject.service.SecondTask;
-import com.samydevup.myspringbatchproject.service.ThirdTask;
+import com.samydevup.myspringbatchproject.tasks.SecondTask;
+import com.samydevup.myspringbatchproject.tasks.ThirdTask;
 import com.samydevup.myspringbatchproject.writer.FirstItemWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,7 +179,7 @@ public class SampleJob {
                 .get("Second Job")
                 .incrementer(new RunIdIncrementer())
                 .start(firstChunkStep())
-                .next(simpleTaskletStep())
+                //.next(simpleTaskletStep())
                 .build();
     }
 
