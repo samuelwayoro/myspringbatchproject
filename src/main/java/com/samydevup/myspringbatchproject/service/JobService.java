@@ -1,5 +1,6 @@
 package com.samydevup.myspringbatchproject.service;
 
+import com.samydevup.myspringbatchproject.request.JobParamsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.batch.core.Job;
@@ -13,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -32,10 +34,11 @@ public class JobService {
     Job secondJob;
 
     @Async
-    public void startJob(String jobName) {
-        //mécanisme d'unicité des jobParameters
+    public void startJob(String jobName, List<JobParamsRequest> jobParamRequestList) {
+        //mécanisme d'unicité des jobParameters, en y ajoutant la liste de paramètres jobRequestList
         Map<String, JobParameter> params = new HashMap<>();
         params.put("currentTime", new JobParameter(System.currentTimeMillis()));
+        jobParamRequestList.forEach(jobParamsRequest -> params.put(jobParamsRequest.getParamKey(), new JobParameter(jobParamsRequest.getParamValue())));
         JobParameters jobParameters = new JobParameters(params);
 
         try {

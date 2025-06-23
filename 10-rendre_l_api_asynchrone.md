@@ -37,3 +37,140 @@ contenant la logique de chaque endpoint du controller. Cette classe doit  :
 
 
 <font color=red> 📌 À retenir: </font>
+
+Grâce à l'asynchronisme ajoutée au service de notre API nous pouvons obtenir avoir un traitement sous plusieurs threads différents 
+des exécutions de notre batch.
+
+---
+
+🧪 <font color=red> EXEMPLE : </font> 
+
+Voici comment créer une API REST complète pour :
+
+- Lancer un job Spring Batch de façon asynchrone
+
+- Consulter l’état d’un job en cours ou terminé
+
+
+🧱 Architecture globale
+
+| API                    | Fonction                                  |
+|------------------------|-------------------------------------------|
+| `POST /run-job`        | Lance un job Spring Batch en arrière-plan |
+| `GET /job-status/{id}` | Retourne l'état d’un job par son ID       |
+
+
+✅ Étapes de mise en œuvre
+
+1. Activer l’exécution asynchrone
+
+
+      @SpringBootApplication
+      @EnableAsync
+      public class BatchApplication {
+         public static void main(String[] args) {
+            SpringApplication.run(BatchApplication.class, args);
+         }
+      }
+
+2. Service Batch (asynchrone)
+
+
+      @Service
+      public class JobService {
+   
+         @Autowired
+         private JobLauncher jobLauncher;
+   
+         @Autowired
+         private Job job;
+   
+         @Async
+         public void lancerJobAsync(JobParameters params) {
+            try {
+               JobExecution execution = jobLauncher.run(job, params);
+               System.out.println("Job lancé avec ID: " + execution.getId());
+            } catch (Exception e) {
+               e.printStackTrace();
+            }
+         }
+   
+         public JobExecution getJobExecution(Long id) throws NoSuchJobExecutionException {
+            return new SimpleJobExplorer(
+               new MapJobInstanceDao(), new MapJobExecutionDao(),
+               new MapStepExecutionDao(), new MapExecutionContextDao()
+            ).getJobExecution(id);
+         }
+      }
+
+💡 Remarque : en prod, on utiliserait JobExplorer avec une base réelle, pas les DAOs en mémoire.
+
+3. Contrôleur REST
+
+
+      @RestController
+      public class JobController {
+   
+         @Autowired
+         private JobService jobService;
+      
+         @Autowired
+         private JobLauncher jobLauncher;
+      
+         @Autowired
+         private Job job;
+   
+      @PostMapping("/run-job")
+      public ResponseEntity<String> runJob() {
+            JobParameters params = new JobParametersBuilder()
+               .addLong("time", System.currentTimeMillis())
+               .toJobParameters();
+   
+           try {
+               JobExecution exec = jobLauncher.run(job, params);
+               return ResponseEntity.ok("Job lancé ! ID = " + exec.getId());
+           } catch (Exception e) {
+               return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                       .body("Erreur lors du lancement du job : " + e.getMessage());
+           }
+      }
+   
+      @GetMapping("/job-status/{id}")
+      public ResponseEntity<String> getStatus(@PathVariable Long id) {
+            try {
+               JobExecution execution = jobService.getJobExecution(id);
+               if (execution == null) {
+                  return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                     .body("Job ID introuvable.");
+            }
+            return ResponseEntity.ok("Status : " + execution.getStatus());
+         } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                  .body("Erreur lors de la récupération du job : " + e.getMessage());
+            }
+         }
+      }
+
+▶ Utilisation
+
+
+1. Lance le job :
+
+
+      curl -X POST http://localhost:8080/run-job
+      # Réponse : Job lancé ! ID = 7
+
+
+2. Vérifie son état :
+
+   
+      curl http://localhost:8080/job-status/7
+      # Réponse : Status : STARTED (ou COMPLETED, FAILED…)
+
+
+✅ Résultat
+Tu as maintenant un système complet :
+
+* Async, non bloquant
+* Traçable via l’ID du job
+* Utilisable depuis un front-end, un script ou une interface admin
