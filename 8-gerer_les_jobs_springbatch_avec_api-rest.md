@@ -2,7 +2,7 @@
 
 <b>
 
-### 📚 <font color=green> étape 14 : Lancer votre job spring batch manuellement avec un REST API ou avec un scheduler  </font>
+### 📚 <font color=green> étape 14 : Lancer votre job spring batch manuellement avec un REST API </font>
 
 🧠 <font color=red> Contexte </font> 
 
