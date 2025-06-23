@@ -40,7 +40,7 @@ public class JobController {
     }
 
 
-    @GetMapping("/stop/{jobExecutionId}")
+    @DeleteMapping("/stop/{jobExecutionId}")
     public String stopJob(@PathVariable Long jobExecutionId) {
         logger.info("inside stopJob endpoint ");
         jobService.stopJob(jobExecutionId);
