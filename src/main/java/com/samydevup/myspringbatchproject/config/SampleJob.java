@@ -10,12 +10,14 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
@@ -58,20 +60,20 @@ public class SampleJob {
         logger.info("👉 step firstChunkStep de JobWithChunckedOrientedSteps en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
                 .<StudentCsv, StudentCsv>chunk(3)
-                .reader(flatFileItemReader())
+                .reader(flatFileItemReader(null))//null a cause de la valeur paramétrée du fichier avec @Value
                 //.processor(firstItemProcessor)
                 .writer(firstItemWriter)
                 .build();
     }
 
 
-    public FlatFileItemReader<StudentCsv> flatFileItemReader() {
+    @StepScope
+    @Bean
+    public FlatFileItemReader<StudentCsv> flatFileItemReader(@Value("#{jobParameters['inputFile']}") FileSystemResource fileSystemResource) {
         FlatFileItemReader<StudentCsv> flatFileItemReader = new FlatFileItemReader<>();
 
-        //configuration de La ressource
-        flatFileItemReader.setResource(new FileSystemResource(
-                new File("D:\\IntelliJJavaProject\\myspringbatchproject\\inputFiles\\students.csv")
-        ));
+        //configuration de La ressource : cette fois-ci paramétrée via une valeur fixée à l'exécution du projet
+        flatFileItemReader.setResource(fileSystemResource);
 
         /**
          * Configuration du LineMapper composé de :

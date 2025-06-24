@@ -62,3 +62,11 @@ Exemples :
                 .linesToSkip(1) // ignore l’en-tête
                 .build();
     }
+
+
+- L'exemple ci-dessus utilise la version de code la plus récente. Et elle utilise : 
+
+  - <font color=yellow> @Value("#{jobParameters['filename']}") TypeDeRessource nomRessource</font>: pour paramétrer la valeur du fichier à lire
+  - <font color=yellow> @Bean </font>: pour ajouter ce Reader dans le context spring afin de l'utiliser a une étape préciser
+  - <font color=yellow> @StepScope </font>: pour mentionner que ce bean sera lancé pendant le Step (chunck Step) du job précisément lors de la lecture des items source.  
+    
