@@ -13,16 +13,12 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
-import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
-import org.springframework.batch.item.file.mapping.DefaultLineMapper;
-import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
-
-import java.io.File;
 
 @Configuration
 public class SampleJob {
@@ -60,47 +56,29 @@ public class SampleJob {
         logger.info("👉 step firstChunkStep de JobWithChunckedOrientedSteps en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
                 .<StudentCsv, StudentCsv>chunk(3)
-                .reader(flatFileItemReader(null))//null a cause de la valeur paramétrée du fichier avec @Value
+                .reader(flatFileItemReader(null))//null à cause de la valeur paramétrée du fichier avec @Value
                 //.processor(firstItemProcessor)
                 .writer(firstItemWriter)
                 .build();
     }
 
 
-    @StepScope
+    /**
+     * ATTENTION : la valeur de inputFile est paramétré dans le "run/Debug Configuration dans l'EDI"
+     * @param filename
+     * @return
+     */
     @Bean
-    public FlatFileItemReader<StudentCsv> flatFileItemReader(@Value("#{jobParameters['inputFile']}") FileSystemResource fileSystemResource) {
-        FlatFileItemReader<StudentCsv> flatFileItemReader = new FlatFileItemReader<>();
-
-        //configuration de La ressource : cette fois-ci paramétrée via une valeur fixée à l'exécution du projet
-        flatFileItemReader.setResource(fileSystemResource);
-
-        /**
-         * Configuration du LineMapper composé de :
-         *  - Line Tokenizer comprenant : un délimiteur (par défaut qui est une ",") et la mention des colonnes de l'entête du fichier
-         *  - Le Bean Mapper : qui est la configuration d'une ligne d'item lû dans le fichier.
-         */
-
-        flatFileItemReader.setLineMapper(new DefaultLineMapper<StudentCsv>() {
-            {
-                setLineTokenizer(new DelimitedLineTokenizer() {
-                    {
-                        setNames("ID", "First Name", "Last Name", "Email");
-                        setDelimiter("|");
-                    }
-                });
-
-                setFieldSetMapper(new BeanWrapperFieldSetMapper<StudentCsv>() {
-                    {
-                        setTargetType(StudentCsv.class);
-                    }
-                });
-            }
-        });
-        //le nombre de lignes à sauter à partir du haut pendant la lecture
-        flatFileItemReader.setLinesToSkip(1);
-
-        return flatFileItemReader;
+    @StepScope
+    public FlatFileItemReader<StudentCsv> flatFileItemReader(
+            @Value("#{jobParameters['inputFile']}") String filename) {
+        return new FlatFileItemReaderBuilder<StudentCsv>()
+                .name("flatFileItemReader")
+                .resource(new FileSystemResource(filename)) // ou ClassPathResource
+                .delimited()
+                .names("ID", "First Name", "Last Name", "Email") // doit correspondre aux noms des attributs
+                .targetType(StudentCsv.class)
+                .linesToSkip(1) // ignore l’en-tête
+                .build();
     }
-
 }
