@@ -64,7 +64,8 @@ public class SampleJob {
 
 
     /**
-     * ATTENTION : la valeur de inputFile est paramétré dans le "run/Debug Configuration dans l'EDI"
+     * ATTENTION : la valeur de inputFile est paramétré
+     * dans le "run/Debug Configuration dans l'EDI"
      * @param filename
      * @return
      */

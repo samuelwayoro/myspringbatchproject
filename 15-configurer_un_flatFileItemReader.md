@@ -27,9 +27,9 @@ Exemples :
 
 <font color=red> 🔧 Etapes de configuration (lecture d’un fichier CSV) </font>
 
-1. créer un dossier interne au projet, contenant le fichier à lire et l'y ajouter (bien formaté). ex : le fichier students.csv dans le dossier inputFiles
-2. créer une classe métier (bean) représentant une ligne du fichier à lire dans un package nommé model (ex : notre classe StudentCsv dont les champs équivalent à une ligne dans le fichier plat student.csv)
-3. création d'une méthode reader, pour la lecture du fichier. Cette configuration en fonction de la version de java utilisé doit contenir les éléments suivant : 
+1. Créer un dossier interne au projet, contenant le fichier à lire et l'y ajouter (bien formaté). ex : le fichier students.csv dans le dossier inputFiles
+2. Créer une classe métier (bean) représentant une ligne du fichier à lire dans un package nommé model (ex : notre classe StudentCsv dont les champs équivalent à une ligne dans le fichier plat student.csv)
+3. Création d'une méthode reader, pour la lecture du fichier. Cette configuration en fonction de la version de java utilisé doit contenir les éléments suivant : 
 
 | Option                | Rôle                                          |
 |-----------------------|-----------------------------------------------|
@@ -66,7 +66,9 @@ Exemples :
 
 - L'exemple ci-dessus utilise la version de code la plus récente. Et elle utilise : 
 
-  - <font color=yellow> @Value("#{jobParameters['filename']}") TypeDeRessource nomRessource</font>: pour paramétrer la valeur du fichier à lire
-  - <font color=yellow> @Bean </font>: pour ajouter ce Reader dans le context spring afin de l'utiliser a une étape préciser
-  - <font color=yellow> @StepScope </font>: pour mentionner que ce bean sera lancé pendant le Step (chunck Step) du job précisément lors de la lecture des items source.  
+  - <font color=yellow> @Value("#{jobParameters['filename']}") TypeDeRessource nomRessource</font> : pour paramétrer la valeur du fichier à lire. 
+      De plus "#{jobParamters[filename]}" signifie que l'application se lance à partir d'une variable d'environnement entrée dans le run de l'ide 
+  - <font color=yellow> @Bean </font>: pour ajouter ce Reader dans le context spring afin de l'utiliser à une étape préciser
+  - <font color=yellow> @StepScope </font>: pour mentionner que ce bean sera lancé pendant un Step (Chunck Step) du job précisément lors de la lecture des items source.  
+  - <font color=yellow>.delimiter() : sert a configurer le délimiteur utilisé dans le fichier csv source</font>
     
