@@ -1,6 +1,7 @@
 package com.samydevup.myspringbatchproject.writer;
 
 import com.samydevup.myspringbatchproject.model.StudentCsv;
+import com.samydevup.myspringbatchproject.model.StudentJdbc;
 import com.samydevup.myspringbatchproject.model.StudentJson;
 import com.samydevup.myspringbatchproject.model.StudentXml;
 import org.slf4j.Logger;
@@ -11,12 +12,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class FirstItemWriter implements ItemWriter<StudentXml> {
+public class FirstItemWriter implements ItemWriter<StudentJdbc> {
 
     private static Logger logger = LoggerFactory.getLogger(FirstItemWriter.class);
 
     @Override
-    public void write(List<? extends StudentXml> items) throws Exception {
+    public void write(List<? extends StudentJdbc> items) throws Exception {
         logger.info("↪  Wrtier en cours ....");
         items.forEach(System.out::println);
     }

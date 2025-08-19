@@ -1,6 +1,7 @@
 package com.samydevup.myspringbatchproject.config;
 
 import com.samydevup.myspringbatchproject.model.StudentCsv;
+import com.samydevup.myspringbatchproject.model.StudentJdbc;
 import com.samydevup.myspringbatchproject.model.StudentJson;
 import com.samydevup.myspringbatchproject.model.StudentXml;
 import com.samydevup.myspringbatchproject.processor.FirstItemProcessor;
@@ -14,6 +15,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
@@ -25,7 +27,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SampleJob {
@@ -47,6 +52,10 @@ public class SampleJob {
     @Autowired
     private FirstItemProcessor firstItemProcessor;
 
+    @Autowired
+    private DataSource dataSource;
+
+
     @Bean
     public Job chunkJob() {
         logger.info("✨✨✨ démarrage du job secondJob() de JobWithChunckedOrientedSteps ");
@@ -62,10 +71,11 @@ public class SampleJob {
     public Step firstChunkStep() {
         logger.info("👉 step firstChunkStep de JobWithChunckedOrientedSteps en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
-                .<StudentXml, StudentXml>chunk(3)
+                .<StudentJdbc, StudentJdbc>chunk(3)
                 //.reader(flatFileItemReader(null))//null à cause de la valeur paramétrée du fichier avec @Value
                 //.reader(jsonJsonItemReader(null))
-                .reader(staxEventItemReader(null))
+                //.reader(staxEventItemReader(null))
+                .reader(jdbcJdbcCursorItemReader())
                 //.processor(firstItemProcessor)
                 .writer(firstItemWriter)
                 .build();
@@ -135,6 +145,22 @@ public class SampleJob {
 
         staxEventItemReader.setUnmarshaller(marshaller);
         return staxEventItemReader;
+    }
+
+
+    @Bean
+    @StepScope
+    public JdbcCursorItemReader<StudentJdbc> jdbcJdbcCursorItemReader() {
+
+        JdbcCursorItemReader<StudentJdbc> jdbcJdbcCursorItemReader = new JdbcCursorItemReader<>();
+        jdbcJdbcCursorItemReader.setDataSource(dataSource);
+        jdbcJdbcCursorItemReader.setSql("select id, first_name as fistName, last_name as lastName, email from student");
+
+        BeanPropertyRowMapper<StudentJdbc> beanPropertyRowMapper = new BeanPropertyRowMapper<>();
+        beanPropertyRowMapper.setMappedClass(StudentJdbc.class);
+
+        jdbcJdbcCursorItemReader.setRowMapper(beanPropertyRowMapper);
+        return jdbcJdbcCursorItemReader;
     }
 
 

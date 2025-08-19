@@ -1,6 +1,6 @@
 package com.samydevup.myspringbatchproject.model;
 
-public class StudentCsv {
+public class StudentJdbc {
 
     private Long id;
     private String firstName;
