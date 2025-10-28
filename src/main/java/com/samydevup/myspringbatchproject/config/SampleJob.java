@@ -1,9 +1,12 @@
 package com.samydevup.myspringbatchproject.config;
 
 import com.samydevup.myspringbatchproject.model.StudentCsv;
+import com.samydevup.myspringbatchproject.model.StudentDTO;
 import com.samydevup.myspringbatchproject.model.StudentJson;
 import com.samydevup.myspringbatchproject.model.StudentXml;
 import com.samydevup.myspringbatchproject.processor.FirstItemProcessor;
+import com.samydevup.myspringbatchproject.processor.MyObjectItemProcessor;
+import com.samydevup.myspringbatchproject.reader.CsvItemReader;
 import com.samydevup.myspringbatchproject.reader.FirstItemReader;
 import com.samydevup.myspringbatchproject.writer.FirstItemWriter;
 import org.slf4j.Logger;
@@ -15,6 +18,7 @@ import org.springframework.batch.core.configuration.annotation.StepBuilderFactor
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
 import org.springframework.batch.item.json.JsonItemReader;
@@ -47,27 +51,38 @@ public class SampleJob {
     @Autowired
     private FirstItemProcessor firstItemProcessor;
 
+    @Autowired
+    private MyObjectItemProcessor myObjectItemProcessor;
+
+    @Autowired
+    private CsvItemReader readerConfig;
+
+
     @Bean
     public Job chunkJob() {
         logger.info("✨✨✨ démarrage du job secondJob() de JobWithChunckedOrientedSteps ");
         return jobBuilderFactory
-                .get("new chunk Job")
+                .get("jobTests faultTolerant()")
                 .incrementer(new RunIdIncrementer())
                 .start(firstChunkStep())
                 .build();
     }
 
 
+    //exemple du step sans faultTolerant en lisant le fichier input (test.xml) ayant une ligne en erreur
     @Bean
     public Step firstChunkStep() {
         logger.info("👉 step firstChunkStep de JobWithChunckedOrientedSteps en cours ... ");
         return stepBuilderFactory.get("First Chunck Step")
-                .<StudentXml, StudentXml>chunk(3)
-                //.reader(flatFileItemReader(null))//null à cause de la valeur paramétrée du fichier avec @Value
+                .<StudentCsv, StudentDTO>chunk(3)
+                .reader(flatFileItemReader(null))//null à cause de la valeur paramétrée du fichier avec @Value
                 //.reader(jsonJsonItemReader(null))
-                .reader(staxEventItemReader(null))
-                //.processor(firstItemProcessor)
+                //.reader(staxEventItemReader(null))
+                .processor(myObjectItemProcessor)
                 .writer(firstItemWriter)
+                .faultTolerant()
+                .skip(FlatFileParseException.class)
+                .skipLimit(2)
                 .build();
     }
 
@@ -84,6 +99,9 @@ public class SampleJob {
     @StepScope
     public FlatFileItemReader<StudentCsv> flatFileItemReader(
             @Value("#{jobParameters['inputFile']}") String filename) {
+
+        logger.info(" ↪  Reader en cours ....");
+
         return new FlatFileItemReaderBuilder<StudentCsv>()
                 .name("flatFileItemReader")
                 .resource(new FileSystemResource(filename)) // ou ClassPathResource
@@ -92,11 +110,11 @@ public class SampleJob {
                 .targetType(StudentCsv.class)
                 .linesToSkip(1) // ignore l’en-tête
                 .build();
+
     }
 
     /**
      * reader for json input file
-     *
      * @param filename
      * @return
      */
@@ -114,7 +132,6 @@ public class SampleJob {
 
     /**
      * reader for xml input file
-     *
      * @param fileSystemResource
      * @return
      */
