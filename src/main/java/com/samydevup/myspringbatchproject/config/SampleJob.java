@@ -51,7 +51,7 @@ public class SampleJob {
     public Job chunkJob() {
         logger.info("✨✨✨ démarrage du job secondJob() de JobWithChunckedOrientedSteps ");
         return jobBuilderFactory
-                .get("Chunk Job")
+                .get("new chunk Job")
                 .incrementer(new RunIdIncrementer())
                 .start(firstChunkStep())
                 .build();
@@ -104,6 +104,7 @@ public class SampleJob {
     @StepScope
     public JsonItemReader<StudentJson> jsonJsonItemReader(
             @Value("#{jobParameters['inputFile']}") String filename) {
+
         return new JsonItemReaderBuilder<StudentJson>()
                 .name("studentJsonItemReader")
                 .resource(new FileSystemResource(filename))
@@ -121,6 +122,7 @@ public class SampleJob {
     @StepScope
     public StaxEventItemReader<StudentXml> staxEventItemReader(@Value("#{jobParameters['inputFile']}") FileSystemResource fileSystemResource) {
 
+        logger.info("le fichier inputFile " + fileSystemResource);
         //instancie un objet de type StaxEventItemReader
         StaxEventItemReader<StudentXml> staxEventItemReader = new StaxEventItemReader<>();
 

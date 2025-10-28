@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<students>
+    <student>
+        <id>1</id>
+        <firstName>Samuel</firstName>
+        <lastName>Wayoro</lastName>
+        <email>samuelw@gmail.com</email>
+    </student>
+    <student>
+        <id>2</id>
+        <firstName>Christelle</firstName>
+        <lastName>Die</lastName>
+        <email>die95@gmail.com</email>
+    </student>
+
+</students>

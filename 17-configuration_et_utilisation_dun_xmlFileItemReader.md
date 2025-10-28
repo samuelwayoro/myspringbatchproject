@@ -59,3 +59,15 @@ Ce composant lit des éléments XML un par un, et les désérialise en objets Ja
 
 - JAXB nécessite des getters et setters publics.
 - Ne pas oublier de bien utiliser le fichier source xml en tant que jobParameter dans l'IDE.
+- <font color=red>Ne pas oublier d'importer la dépendance spring-oxm dans ton constructeur de projet maven ou gradle.</font> 
+spring-oxm fourni les classes :
+    * Jaxb2Marshaller pour désérialiser les fragments XML en objets java (JAXB) 
+    * Interfaces et outils pour gérer la conversion objets java vers xml / xml vers objets java.
+Sans cette dépendance, tu auras des erreurs du type : ClassNotFoundexception: org.springframework.jaxb.Jaxb2Marshaller
+    * Dépendance maven a ajouter : 
+                
+                    <dependency>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring-oxm</artifactId>
+                   </dependency>
+

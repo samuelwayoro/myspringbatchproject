@@ -2,9 +2,9 @@
 <students>
 	<student>
 		<id>1</id>
-		<firstName>John</firstName>
-		<lastName>Smith</lastName>
-		<email>john@gmail.com</email>
+		<firstName>Samuel</firstName>
+		<lastName>Wayoro</lastName>
+		<email>samuelw@gmail.com</email>
 	</student>
 	<student>
 		<id>2</id>

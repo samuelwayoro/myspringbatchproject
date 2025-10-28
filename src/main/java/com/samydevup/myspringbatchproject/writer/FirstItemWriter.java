@@ -17,7 +17,7 @@ public class FirstItemWriter implements ItemWriter<StudentXml> {
 
     @Override
     public void write(List<? extends StudentXml> items) throws Exception {
-        logger.info("↪  Wrtier en cours ....");
+        logger.info("↪  Writer en cours ....");
         items.forEach(System.out::println);
     }
 }
